@@ -3,121 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پخش‌کننده موسیقی</title>
+    <title>پخش‌کننده عاشقانه</title>
     <style>
+        /* ===== تنظیمات کلی ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
-            direction: rtl;
-        }
-        #player {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        #songTitle {
-            font-size: 24px;
-            margin-bottom: 20px;
+            background: linear-gradient(145deg, #1a0b1a, #2d1b2d, #1a0b1a);
             color: #fff;
+            direction: rtl;
+            padding: 20px;
         }
-        #audioPlayer {
+
+        /* ===== کارت اصلی ===== */
+        .player-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 35px 30px 30px;
+            max-width: 480px;
             width: 100%;
-            margin: 10px 0;
-            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 80, 120, 0.15);
+            border: 1px solid rgba(255, 200, 220, 0.10);
+            text-align: center;
+            transition: all 0.4s ease;
         }
-        #loading {
-            color: #aaa;
-            font-size: 14px;
+
+        /* ===== هدر عاشقانه ===== */
+        .romantic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        .error {
-            color: #ff6b6b;
+
+        .heart-icon {
+            font-size: 28px;
+            animation: heartbeat 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 12px rgba(255, 60, 100, 0.6));
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .romantic-title {
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #ffb0c0;
+            text-shadow: 0 0 20px rgba(255, 100, 150, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 150, 180, 0.15);
+        }
+
+        /* ===== کاور آهنگ (جعلی) ===== */
+        .cover-art {
+            width: 140px;
+            height: 140px;
+            margin: 10px auto 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff8a9b, #b3415a);
+            box-shadow: 0 0 40px rgba(255, 70, 120, 0.5), 0 0 80px rgba(255, 40, 80, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+        }
+        .cover-art.playing {
+            animation: spin 8s linear infinite;
+            box-shadow: 0 0 60px rgba(255, 70, 120, 0.7);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== نام آهنگ و خواننده ===== */
+        .song-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #ffe6ea, #ffb0c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 120, 160, 0.2);
+        }
+
+        .song-artist {
+            font-size: 15px;
+            color: #b08899;
+            margin-top: 4px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* ===== پلیر شبیه ساندکلاد ===== */
+        .soundcloud-player {
+            margin: 25px 0 18px;
+            padding: 12px 0;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* نوار پیشرفت */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+        }
+
+        .time-display {
+            font-size: 13px;
+            color: #b08899;
+            font-weight: 300;
+            min-width: 40px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 4px;
+            outline: none;
+            transition: height 0.2s;
+            cursor: pointer;
+        }
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ff7a9b;
+            box-shadow: 0 0 16px rgba(255, 80, 120, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: 0.2s;
+        }
+        .progress-bar::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #ff5a8a;
+        }
+        .progress-bar::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ff7a9b;
+            box-shadow: 0 0 16px rgba(255, 80, 120, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* دکمه‌های کنترل */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: #e0c0cc;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .ctrl-btn:hover {
+            color: #fff;
+            background: rgba(255, 100, 140, 0.15);
+            transform: scale(1.05);
+        }
+        .ctrl-btn.play-btn {
+            font-size: 42px;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(135deg, #ff7a9b, #d94a7a);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 70, 120, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.10);
+        }
+        .ctrl-btn.play-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 45px rgba(255, 70, 120, 0.6);
+        }
+
+        /* ===== بخش متن آهنگ (شبیه ساندکلاد) ===== */
+        .lyrics-section {
+            margin: 18px 0 8px;
+            padding: 16px 14px;
+            background: rgba(0, 0, 0, 0.20);
+            border-radius: 20px;
+            max-height: 140px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            scrollbar-width: thin;
+            scrollbar-color: #ff7a9b transparent;
+        }
+        .lyrics-section::-webkit-scrollbar {
+            width: 4px;
+        }
+        .lyrics-section::-webkit-scrollbar-thumb {
+            background: #ff7a9b;
+            border-radius: 8px;
+        }
+
+        .lyrics-line {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #c8b0bc;
+            padding: 2px 6px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+        .lyrics-line.active {
+            color: #fff;
+            font-weight: 500;
+            background: rgba(255, 120, 160, 0.12);
+            border-right: 3px solid #ff7a9b;
+            padding-right: 14px;
+        }
+
+        /* ===== دیباگ ===== */
+        .debug-info {
+            margin-top: 14px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            font-size: 11px;
+            color: #88707a;
+            word-break: break-all;
+            text-align: left;
+            direction: ltr;
+            max-height: 60px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* ===== ریسپانسیو ===== */
+        @media (max-width: 480px) {
+            .player-card { padding: 25px 18px; }
+            .cover-art { width: 110px; height: 110px; font-size: 48px; }
+            .song-title { font-size: 21px; }
+            .ctrl-btn.play-btn { width: 58px; height: 58px; font-size: 34px; }
         }
     </style>
 </head>
 <body>
-    <div id="player">
-        <h1 id="songTitle">در حال بارگذاری...</h1>
-        <p id="loading">لطفاً منتظر بمانید...</p>
-        <audio id="audioPlayer" controls style="display:none;">
-            مرورگر شما از پخش صوتی پشتیبانی نمی‌کند.
-        </audio>
+
+<div class="player-card">
+
+    <!-- ===== هدر عاشقانه ===== -->
+    <div class="romantic-header">
+        <span class="heart-icon">💕</span>
+        <span class="romantic-title">✨ به عشق تو</span>
+        <span class="heart-icon">💕</span>
     </div>
 
-    <script>
-        // =============================================
-        // تنظیمات JSONBin - این مقادیر را جایگزین کنید
-        // =============================================
-        const CONFIG_URL = 'https://api.jsonbin.io/v3/b/6a879b63da38895dfefd82ae';
-        
-        // ⚠️ کلید API خود را اینجا قرار دهید (از بخش API Keys در JSONBin)
-        const API_KEY = '$2a$10$dO55hJzVChXSAeDimGb5h.rJ9VepLCdYPnWtRX/iBO7/R5UGVrwCm';
-        // =============================================
+    <!-- ===== کاور ===== -->
+    <div class="cover-art" id="coverArt">🎵</div>
 
-        async function loadSong() {
-            const titleEl = document.getElementById('songTitle');
-            const audioEl = document.getElementById('audioPlayer');
-            const loadingEl = document.getElementById('loading');
+    <!-- ===== عنوان آهنگ ===== -->
+    <div class="song-title" id="songTitle">در حال بارگذاری...</div>
+    <div class="song-artist" id="songArtist">♥ برای عزیز دلم</div>
 
-            try {
-                // دریافت تنظیمات از JSONBin با ارسال کلید API
-                const response = await fetch(CONFIG_URL, {
-                    headers: {
-                        'X-Master-Key': API_KEY
-                    }
-                });
+    <!-- ===== پلیر ساندکلاد ===== -->
+    <div class="soundcloud-player">
+        <div class="progress-container">
+            <span class="time-display" id="currentTime">0:00</span>
+            <input type="range" class="progress-bar" id="progressBar" value="0" min="0" step="0.01">
+            <span class="time-display" id="durationTime">0:00</span>
+        </div>
 
-                if (!response.ok) {
-                    throw new Error('خطا در دریافت تنظیمات - کد: ' + response.status);
-                }
+        <div class="controls">
+            <button class="ctrl-btn" id="prevBtn" title="قبلی">⏮</button>
+            <button class="ctrl-btn play-btn" id="playBtn">▶</button>
+            <button class="ctrl-btn" id="nextBtn" title="بعدی">⏭</button>
+        </div>
+    </div>
 
-                const data = await response.json();
-                const config = data.record;
+    <!-- ===== متن آهنگ ===== -->
+    <div class="lyrics-section" id="lyricsContainer">
+        <div class="lyrics-line" id="lyricsPlaceholder">💭 متن آهنگ در حال بارگذاری...</div>
+    </div>
 
-                const activeId = config.active_song;
-                const song = config.songs[activeId];
+    <!-- ===== دیباگ (مفید برای عیب‌یابی) ===== -->
+    <div class="debug-info" id="debugInfo">⏳ در حال اتصال...</div>
+</div>
 
-                if (!song) {
-                    throw new Error('آهنگ فعال پیدا نشد');
-                }
+<script>
+    // ============================================================
+    //  تنظیمات – لینک JSONBin خود را اینجا قرار دهید
+    // ============================================================
+    const CONFIG_URL = 'https://api.jsonbin.io/v3/b/6a878c4cf5f4af5e292eeecd';
 
-                titleEl.textContent = song.name;
-                loadingEl.textContent = '';
+    // ============================================================
+    //  عناصر DOM
+    // ============================================================
+    const coverArt    = document.getElementById('coverArt');
+    const songTitle   = document.getElementById('songTitle');
+    const songArtist  = document.getElementById('songArtist');
+    const audio       = document.getElementById('audioPlayer');
+    const playBtn     = document.getElementById('playBtn');
+    const prevBtn     = document.getElementById('prevBtn');
+    const nextBtn     = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const currentTime = document.getElementById('currentTime');
+    const durationTime = document.getElementById('durationTime');
+    const lyricsContainer = document.getElementById('lyricsContainer');
+    const debugEl     = document.getElementById('debugInfo');
 
-                audioEl.src = song.file;
-                audioEl.style.display = 'block';
-                audioEl.load();
+    // ایجاد المنت audio به صورت پویا
+    const audioEl = new Audio();
+    audioEl.controls = false;
+    audioEl.preload = 'auto';
 
-                try {
-                    await audioEl.play();
-                } catch (playError) {
-                    loadingEl.textContent = 'برای پخش، دکمه پلی را بزنید';
-                    loadingEl.style.color = '#ffd93d';
-                }
+    // ============================================================
+    //  متغیرهای وضعیت
+    // ============================================================
+    let songList = [];
+    let currentSongIndex = 0;
+    let isPlaying = false;
+    let lyricsData = []; // آرایه‌ای از متن‌ها با زمان
+    let updateInterval = null;
 
-            } catch (error) {
-                console.error('خطا:', error);
-                titleEl.textContent = 'خطا در پخش آهنگ';
-                loadingEl.textContent = error.message;
-                loadingEl.className = 'error';
-            }
+    // ============================================================
+    //  بارگذاری تنظیمات از JSONBin
+    // ============================================================
+    async function loadConfig() {
+        try {
+            debugEl.textContent = '📡 در حال دریافت تنظیمات...';
+            const resp = await fetch(CONFIG_URL);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            const config = data.record;
+
+            // تبدیل شیء songs به آرایه برای پشتیبانی از چند آهنگ
+            const songsObj = config.songs || {};
+            songList = Object.keys(songsObj).map(key => ({
+                id: key,
+                name: songsObj[key].name || 'آهنگ بدون نام',
+                file: songsObj[key].file || '',
+                artist: songsObj[key].artist || '♥ برای عزیز دلم',
+                lyrics: songsObj[key].lyrics || []  // آرایه‌ای از { time: seconds, text: '...' }
+            }));
+
+            // اگر آهنگ فعال مشخص شده، از آن شروع کن
+            const activeId = config.active_song;
+            const foundIndex = songList.findIndex(s => s.id == activeId);
+            if (foundIndex !== -1) currentSongIndex = foundIndex;
+
+            debugEl.textContent = `✅ ${songList.length} آهنگ بارگذاری شد`;
+            loadSong(currentSongIndex);
+        } catch (err) {
+            debugEl.textContent = '❌ خطا: ' + err.message;
+            songTitle.textContent = 'خطا در بارگذاری';
+        }
+    }
+
+    // ============================================================
+    //  بارگذاری یک آهنگ خاص
+    // ============================================================
+    function loadSong(index) {
+        const song = songList[index];
+        if (!song) return;
+
+        songTitle.textContent = song.name;
+        songArtist.textContent = song.artist || '♥ برای عزیز دلم';
+        coverArt.textContent = '🎵';
+        coverArt.classList.remove('playing');
+
+        audioEl.src = song.file;
+        audioEl.load();
+
+        // بارگذاری متن آهنگ
+        lyricsData = song.lyrics || [];
+        renderLyrics(0);
+
+        // به‌روزرسانی دکمه پلی
+        isPlaying = false;
+        playBtn.textContent = '▶';
+
+        // ریست نوار پیشرفت
+        progressBar.value = 0;
+        currentTime.textContent = '0:00';
+
+        debugEl.textContent = `🎵 بارگذاری: ${song.name}`;
+    }
+
+    // ============================================================
+    //  رندر متن آهنگ
+    // ============================================================
+    function renderLyrics(currentTimeSec) {
+        if (!lyricsData || lyricsData.length === 0) {
+            lyricsContainer.innerHTML = `<div class="lyrics-line">💭 متن آهنگی برای این آهنگ ثبت نشده است...</div>`;
+            return;
         }
 
-        window.onload = loadSong;
-    </script>
+        let html = '';
+        let activeFound = false;
+        for (let i = 0; i < lyricsData.length; i++) {
+            const line = lyricsData[i];
+            const isActive = (currentTimeSec >= line.time && 
+                              (i === lyricsData.length - 1 || currentTimeSec < lyricsData[i+1].time));
+            if (isActive) activeFound = true;
+            html += `<div class="lyrics-line ${isActive ? 'active' : ''}">${line.text}</div>`;
+        }
+
+        // اگر هیچ لاینی فعال نبود، اولین خط را فعال کن
+        if (!activeFound && lyricsData.length > 0) {
+            // جایگزین کردن اولین خط با کلاس active
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const firstLine = tempDiv.querySelector('.lyrics-line');
+            if (firstLine) firstLine.classList.add('active');
+            html = tempDiv.innerHTML;
+        }
+
+        lyricsContainer.innerHTML = html;
+
+        // اسکرول خودکار به خط فعال
+        const activeEl = lyricsContainer.querySelector('.lyrics-line.active');
+        if (activeEl) {
+            activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+    }
+
+    // ============================================================
+    //  کنترل پلیر
+    // ============================================================
+    function togglePlay() {
+        if (audioEl.src === '') return;
+
+        if (isPlaying) {
+            audioEl.pause();
+            playBtn.textContent = '▶';
+            coverArt.classList.remove('playing');
+            isPlaying = false;
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        } else {
+            audioEl.play().then(() => {
+                isPlaying = true;
+                playBtn.textContent = '⏸';
+                coverArt.classList.add('playing');
+                startProgressUpdate();
+            }).catch(err => {
+                debugEl.textContent = '⚠️ پخش خودکار ممکن نیست: ' + err.message;
+                // در صورت خطا، دکمه به حالت پلی برمی‌گردد
+            });
+        }
+    }
+
+    function startProgressUpdate() {
+        if (updateInterval) clearInterval(updateInterval);
+        updateInterval = setInterval(() => {
+            if (!audioEl.duration || isNaN(audioEl.duration)) return;
+            const percent = (audioEl.currentTime / audioEl.duration) * 100;
+            progressBar.value = percent;
+            currentTime.textContent = formatTime(audioEl.currentTime);
+            if (durationTime.textContent === '0:00' || durationTime.textContent === 'NaN:NaN') {
+                durationTime.textContent = formatTime(audioEl.duration);
+            }
+            // به‌روزرسانی متن آهنگ بر اساس زمان
+            renderLyrics(audioEl.currentTime);
+        }, 300);
+    }
+
+    function formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return '0:00';
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    // ============================================================
+    //  رویدادهای audio
+    // ============================================================
+    audioEl.addEventListener('loadedmetadata', () => {
+        durationTime.textContent = formatTime(audioEl.duration);
+        progressBar.max = 100;
+    });
+
+    audioEl.addEventListener('ended', () => {
+        isPlaying = false;
+        playBtn.textContent = '▶';
+        coverArt.classList.remove('playing');
+        progressBar.value = 0;
+        currentTime.textContent = '0:00';
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+        // پخش آهنگ بعدی (اختیاری)
+        // nextSong();
+    });
+
+    audioEl.addEventListener('error', (e) => {
+        debugEl.textContent = '❌ خطا در پخش: ' + (audioEl.error ? audioEl.error.message : 'ناشناخته');
+    });
+
+    // ============================================================
+    //  رویدادهای دکمه‌ها
+    // ============================================================
+    playBtn.addEventListener('click', togglePlay);
+
+    progressBar.addEventListener('input', (e) => {
+        if (!audioEl.duration) return;
+        const percent = parseFloat(e.target.value);
+        audioEl.currentTime = (percent / 100) * audioEl.duration;
+        currentTime.textContent = formatTime(audioEl.currentTime);
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (songList.length === 0) return;
+        currentSongIndex = (currentSongIndex - 1 + songList.length) % songList.length;
+        loadSong(currentSongIndex);
+        if (isPlaying) {
+            audioEl.play().catch(() => {});
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (songList.length === 0) return;
+        currentSongIndex = (currentSongIndex + 1) % songList.length;
+        loadSong(currentSongIndex);
+        if (isPlaying) {
+            audioEl.play().catch(() => {});
+        }
+    });
+
+    // کلیک روی کاور برای پلی/مکث
+    coverArt.addEventListener('click', togglePlay);
+
+    // ============================================================
+    //  شروع برنامه
+    // ============================================================
+    loadConfig();
+
+    // کمک: اگر روی صفحه کلیک شد و پلی نشد، کاربر بتواند دکمه را بزند
+    console.log('💕 پلیر عاشقانه آماده است!');
+</script>
 </body>
 </html>
