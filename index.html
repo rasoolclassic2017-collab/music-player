@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پخش‌کننده موسیقی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            direction: rtl;
+        }
+        #player {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        #songTitle {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        #audioPlayer {
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        #loading {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .error {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div id="player">
+        <h1 id="songTitle">در حال بارگذاری...</h1>
+        <p id="loading">لطفاً منتظر بمانید...</p>
+        <audio id="audioPlayer" controls style="display:none;">
+            مرورگر شما از پخش صوتی پشتیبانی نمی‌کند.
+        </audio>
+    </div>
+
+    <script>
+        // =============================================
+        // لینک JSONBin خود را اینجا قرار دهید (مرحله 3)
+        // =============================================
+        const CONFIG_URL = 'https://api.jsonbin.io/v3/b/6a878c4cf5f4af5e292eeecd';
+        async function loadSong() {
+            const titleEl = document.getElementById('songTitle');
+            const audioEl = document.getElementById('audioPlayer');
+            const loadingEl = document.getElementById('loading');
+
+            try {
+                // دریافت تنظیمات از JSONBin
+                const response = await fetch(CONFIG_URL);
+                
+                if (!response.ok) {
+                    throw new Error('خطا در دریافت تنظیمات');
+                }
+
+                const data = await response.json();
+                // ساختار پاسخ JSONBin: data.record شامل محتوای اصلی است
+                const config = data.record;
+
+                // پیدا کردن آهنگ فعال
+                const activeId = config.active_song;
+                const song = config.songs[activeId];
+
+                if (!song) {
+                    throw new Error('آهنگ فعال پیدا نشد');
+                }
+
+                // نمایش نام آهنگ
+                titleEl.textContent = song.name;
+                loadingEl.textContent = '';
+
+                // تنظیم فایل صوتی
+                audioEl.src = song.file;
+                audioEl.style.display = 'block';
+                audioEl.load();
+
+                // تلاش برای پخش خودکار
+                try {
+                    await audioEl.play();
+                } catch (playError) {
+                    // مرورگر ممکن است پخش خودکار را مسدود کند
+                    loadingEl.textContent = 'برای پخش، دکمه پلی را بزنید';
+                    loadingEl.style.color = '#ffd93d';
+                }
+
+            } catch (error) {
+                console.error('خطا:', error);
+                titleEl.textContent = 'خطا در پخش آهنگ';
+                loadingEl.textContent = error.message;
+                loadingEl.className = 'error';
+            }
+        }
+
+        // بارگذاری آهنگ وقتی صفحه لود شد
+        window.onload = loadSong;
+    </script>
+</body>
+</html>
