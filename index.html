@@ -60,27 +60,34 @@
 
     <script>
         // =============================================
-        // لینک JSONBin خود را اینجا قرار دهید (مرحله 3)
+        // تنظیمات JSONBin - این مقادیر را جایگزین کنید
         // =============================================
         const CONFIG_URL = 'https://api.jsonbin.io/v3/b/6a878c4cf5f4af5e292eeecd';
+        
+        // ⚠️ کلید API خود را اینجا قرار دهید (از بخش API Keys در JSONBin)
+        const API_KEY = 'کلید_API_خود_را_اینجا_وارد_کنید';
+        // =============================================
+
         async function loadSong() {
             const titleEl = document.getElementById('songTitle');
             const audioEl = document.getElementById('audioPlayer');
             const loadingEl = document.getElementById('loading');
 
             try {
-                // دریافت تنظیمات از JSONBin
-                const response = await fetch(CONFIG_URL);
-                
+                // دریافت تنظیمات از JSONBin با ارسال کلید API
+                const response = await fetch(CONFIG_URL, {
+                    headers: {
+                        'X-Master-Key': API_KEY
+                    }
+                });
+
                 if (!response.ok) {
-                    throw new Error('خطا در دریافت تنظیمات');
+                    throw new Error('خطا در دریافت تنظیمات - کد: ' + response.status);
                 }
 
                 const data = await response.json();
-                // ساختار پاسخ JSONBin: data.record شامل محتوای اصلی است
                 const config = data.record;
 
-                // پیدا کردن آهنگ فعال
                 const activeId = config.active_song;
                 const song = config.songs[activeId];
 
@@ -88,20 +95,16 @@
                     throw new Error('آهنگ فعال پیدا نشد');
                 }
 
-                // نمایش نام آهنگ
                 titleEl.textContent = song.name;
                 loadingEl.textContent = '';
 
-                // تنظیم فایل صوتی
                 audioEl.src = song.file;
                 audioEl.style.display = 'block';
                 audioEl.load();
 
-                // تلاش برای پخش خودکار
                 try {
                     await audioEl.play();
                 } catch (playError) {
-                    // مرورگر ممکن است پخش خودکار را مسدود کند
                     loadingEl.textContent = 'برای پخش، دکمه پلی را بزنید';
                     loadingEl.style.color = '#ffd93d';
                 }
@@ -114,7 +117,6 @@
             }
         }
 
-        // بارگذاری آهنگ وقتی صفحه لود شد
         window.onload = loadSong;
     </script>
 </body>
